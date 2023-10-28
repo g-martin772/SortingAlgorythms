@@ -1,11 +1,31 @@
-﻿using SortingAlgorythms;
+﻿using System.Diagnostics;
+using SortingAlgorythms;
 using System.Runtime.CompilerServices;
+using GenericDoubleLinkedListDLL;
 
 namespace Test;
 
 internal static class Program
 {
     static void Main(string[] args)
+    {
+        var list = new GenericLinkedList<int>();
+        
+        Random rnd = new Random();
+        for (int i = 0; i < 100; i++)
+        {
+            list.Append(rnd.Next(1, 100));
+        }
+
+        Console.WriteLine(list.ToString());
+        
+        list.SetSortBehaviour(new LinkedQuciksort<int>());
+        list.Sort();
+       
+        Console.WriteLine(list.ToString());
+    }
+
+    private static void TestSorting()
     {
         SorterContext context = new();
 

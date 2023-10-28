@@ -1,4 +1,5 @@
 ﻿using System.Diagnostics;
+using GenericDoubleLinkedListDLL;
 
 namespace SortingAlgorythms;
 
@@ -23,4 +24,9 @@ public class SorterContext
         sw.Stop();
         return sw.ElapsedMilliseconds;
     }
+}
+
+public interface ILinkedListSorter<T> where T : IComparable<T>
+{
+    public void Sort(GenericLinkedList<T> list);
 }
