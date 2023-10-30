@@ -13,8 +13,8 @@ public class Node<T> where T : IComparable<T>
 
 public class GenericLinkedList<T> where T : IComparable<T> 
 {
-    public Node<T> Head { get; private set; }
-    public Node<T> Tail { get; private set; }
+    public Node<T>? Head { get; set; }
+    public Node<T>? Tail { get; set; }
 
     private ILinkedListSorter<T> sortBeh;
 
@@ -185,52 +185,24 @@ public class GenericLinkedList<T> where T : IComparable<T>
     {
         return Remove(Find(value));
     }
-    public Node<T> Remove(Node<T> value)
+    public Node<T>? Remove(Node<T> value)
     {
         if (Head == null)
             return null;
         
-        if (value == Head)
+        for (var temp = Head; temp != null; temp = temp.Next)
         {
-            if (Head.Next is not null)
-            {
-                Head = Head.Next;
-                Head.Prev = null;
-            }
-            else
-                Head = null!;
-            
+            if (value != temp) continue;
+
+            if (Head == value) Head = Head.Next;
+            if (Tail == value) Tail = Tail.Prev;
+
+            if (temp.Prev != null) temp.Prev.Next = temp.Next;
+            if (temp.Next != null) temp.Next.Prev = temp.Prev;
+
             value.Next = null;
             value.Prev = null;
             return value;
-        }
-        
-        if (value == Tail)
-        {
-            if (Tail.Prev is not null)
-            {
-                Tail = Tail.Prev;
-                Tail.Next = null;
-            }
-            else
-                Head = null!;
-            
-            value.Prev = null;
-            value.Next = null;
-            return value;
-        }
-        
-        for (Node<T> temp = Head; temp.Next != null; temp = temp.Next)
-        {
-            if (value == temp.Next)
-            {
-                temp.Next = temp.Next.Next;
-                temp.Next.Prev = temp;
-                
-                value.Next = null;
-                value.Prev = null;
-                return value;
-            }
         }
 
         return null;
@@ -368,7 +340,7 @@ public class GenericLinkedList<T> where T : IComparable<T>
     {
         if (temp != null)
         {
-            if (temp.Data.CompareTo(max.Data) == 1)
+            if (temp.Data.CompareTo(max.Data) > 0)
             {
                 max = temp;
             }
@@ -459,25 +431,28 @@ public class GenericLinkedList<T> where T : IComparable<T>
         PrintListReverseRec(Tail);
     }
 
-    public void CreateList(int size, int min, int max)
+    public static GenericLinkedList<T> CreateListWithRandomNumbers(int size, int min, int max)
     {
+        GenericLinkedList<T> list = new GenericLinkedList<T>();
         Random random = new Random();
         for (int i = 0; i < size; i++)
         {
             T value = (T)(object)random.Next(min, max);
-            Node<T> newNode = new Node<T>() {Data = value};
-            if (Head == null)
+            Node<T> newNode = new Node<T>() { Data = value };
+            if (list.Head == null)
             {
-                Head = newNode;
-                Tail = newNode;
+                list.Head = newNode;
+                list.Tail = newNode;
             }
             else
             {
-                newNode.Prev = Tail;
-                Tail.Next = newNode;
-                Tail = newNode;
+                newNode.Prev = list.Tail;
+                list.Tail.Next = newNode;
+                list.Tail = newNode;
             }
         }
+
+        return list;
     }
 
     public int GetLenght()
@@ -524,5 +499,15 @@ public class GenericLinkedList<T> where T : IComparable<T>
         for (Node<T> temp = Head; temp.Next != null; temp = temp.Next)
             output.AppendLine(temp.Data.ToString());
         return output.ToString();
+    }
+    
+    private Node<T>? SearchRec(Node<T>? current, T data)
+    {
+        return current is null ? null : current.Data.CompareTo(data) == 0 ? current : SearchRec(current.Next, data);
+    }
+
+    public Node<T>? Search(T data)
+    {
+        return SearchRec(Head, data);
     }
 }

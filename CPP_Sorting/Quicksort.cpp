@@ -82,7 +82,7 @@ void introsort(std::vector<int>& arr, int low, int high) {
 }
 
 int main() {
-	const int N = pow(10, 6);
+	const int N = pow(10, 8);
 	std::vector<int> arr;
 
 	// Generate N random numbers

@@ -1,30 +1,78 @@
 ﻿using System.Diagnostics;
 using SortingAlgorythms;
 using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices.JavaScript;
+using BenchmarkDotNet.Attributes;
+using BenchmarkDotNet.Running;
 using GenericDoubleLinkedListDLL;
 
 namespace Test;
 
-internal static class Program
+public static class Program
 {
     static void Main(string[] args)
     {
-        var list = new GenericLinkedList<int>();
+        var summary1 = BenchmarkRunner.Run<SortingBenchmark>();
+        Console.WriteLine(summary1);
+    }
+    
+    [MemoryDiagnoser]
+    [ThreadingDiagnoser]
+    [ExceptionDiagnoser]  
+    public class SortingBenchmark
+    {
+        [Params(10, 100, 1000)]
+        public int N;
         
-        Random rnd = new Random();
-        for (int i = 0; i < 100; i++)
+        public GenericLinkedList<int> list;
+        
+        [GlobalSetup]
+        public void Setup()
         {
-            list.Append(rnd.Next(1, 100));
+            list = new GenericLinkedList<int>();
+            Random rnd = new Random();
+            for (int i = 0; i < N; i++)
+            {
+                list.Append(rnd.Next(1, 100));
+            }
         }
 
-        Console.WriteLine(list.ToString());
+        [Benchmark]
+        public void MergeSort()
+        {
+            list.SetSortBehaviour(new LinkedMergeSort<int>());
+            list.Sort();
+        }
         
-        list.SetSortBehaviour(new LinkedQuciksort<int>());
-        list.Sort();
-       
-        Console.WriteLine(list.ToString());
+        [Benchmark]
+        public void QuickSort()
+        {
+            list.SetSortBehaviour(new LinkedQuciksort<int>());
+            list.Sort();
+        }
     }
-
+    
+   
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
     private static void TestSorting()
     {
         SorterContext context = new();
